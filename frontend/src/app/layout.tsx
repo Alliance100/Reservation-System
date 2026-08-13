@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { AuthProvider } from "@/components/AuthProvider";
 
 const outfit = Outfit({
@@ -22,13 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} font-sans antialiased min-h-screen bg-[#F7FBF9] text-gray-800`}
+        className={`${outfit.variable} font-sans antialiased min-h-screen bg-[#F7FBF9] text-gray-800 flex flex-col`}
       >
         <AuthProvider>
           <Navbar />
-          <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            {children}
-          </main>
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

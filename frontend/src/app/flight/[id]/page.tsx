@@ -25,67 +25,119 @@ export default function FlightDetail() {
     if (id) fetchFlight();
   }, [id]);
 
-  if (loading) return <div className="text-center py-20 text-emerald-600 font-bold">Loading Flight...</div>;
-  if (!flight) return <div className="text-center py-20 text-gray-500">Flight not found.</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F7FBF9] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="text-5xl animate-bounce">✈️</div>
+          <div className="text-xl font-bold text-emerald-800">Preparing for takeoff...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!flight) return <div className="text-center py-32 text-gray-500 font-bold text-xl">Flight not found.</div>;
 
   return (
-    <div className="py-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
-      <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 p-8">
+    <div className="min-h-screen bg-[#F7FBF9] pb-32">
+      {/* Immersive Hero Section */}
+      <div className="relative h-[50vh] min-h-[400px] w-full bg-emerald-900">
+        <img 
+          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80" 
+          alt="Flight" 
+          className="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-overlay"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F7FBF9] via-black/20 to-black/40"></div>
         
-        <div className="flex items-center justify-between border-b border-gray-100 pb-6 mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-xl">
-              ✈️
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">{flight.airline}</h2>
-              <p className="text-sm text-gray-500">Flight {flight.flightNumber} • {flight.fareClass}</p>
-            </div>
+        <div className="absolute bottom-0 left-0 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 translate-y-8 z-10">
+          <div className="flex flex-wrap gap-3 mb-6">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/90 backdrop-blur-md text-emerald-800 text-xs font-black uppercase tracking-wider rounded-xl shadow-lg">
+              <span className="text-emerald-500">✈️</span> {flight.airline}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/90 backdrop-blur-md text-emerald-800 text-xs font-black uppercase tracking-wider rounded-xl shadow-lg">
+              <span className="text-emerald-500">🎫</span> Flight {flight.flightNumber}
+            </span>
           </div>
-          <div className="text-right">
-            <div className="text-3xl font-black text-emerald-600">${flight.price}</div>
-          </div>
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tight leading-none mb-4 drop-shadow-sm">
+            {flight.origin} to {flight.destination}
+          </h1>
         </div>
+      </div>
 
-        <div className="flex justify-between items-center mb-8 py-4">
-          <div className="text-center">
-            <div className="text-4xl font-black text-gray-900">{flight.origin}</div>
-            <div className="text-sm font-medium text-emerald-700 mt-2">
-              {new Date(flight.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </div>
-            <div className="text-xs text-gray-500">{new Date(flight.departureTime).toLocaleDateString()}</div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-start">
           
-          <div className="flex-1 px-8 text-center relative">
-             <p className="text-sm text-gray-500 mb-2 font-medium">{flight.duration}</p>
-             <div className="h-0.5 w-full bg-gray-200 relative">
-               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-300">
-                 ✈️
-               </div>
-             </div>
-             <p className="text-xs text-emerald-600 mt-2 font-bold uppercase tracking-wider">Direct Flight</p>
+          {/* Main Content (Left) */}
+          <div className="lg:col-span-7 xl:col-span-8 space-y-16">
+            
+            {/* Flight Details */}
+            <section>
+              <h2 className="text-3xl font-black text-gray-900 mb-8">Flight Details</h2>
+              
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-10 relative overflow-hidden">
+                <div className="absolute left-12 top-14 bottom-14 w-1 border-l-2 border-dashed border-gray-200"></div>
+                
+                <div className="flex items-start mb-12 relative">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500 border-4 border-white shadow-sm flex-shrink-0 relative z-10 mt-1"></div>
+                  <div className="ml-6">
+                    <div className="text-xs font-black text-emerald-600 uppercase tracking-wider mb-1">Takeoff</div>
+                    <div className="text-2xl font-bold text-gray-900">{new Date(flight.departureTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    <div className="text-gray-500 font-medium">{new Date(flight.departureTime).toLocaleDateString()} • {flight.origin} Airport</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start relative">
+                  <div className="w-8 h-8 rounded-full bg-gray-900 border-4 border-white shadow-sm flex-shrink-0 relative z-10 mt-1"></div>
+                  <div className="ml-6">
+                    <div className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Landing</div>
+                    <div className="text-2xl font-bold text-gray-900">{new Date(flight.arrivalTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    <div className="text-gray-500 font-medium">{new Date(flight.arrivalTime).toLocaleDateString()} • {flight.destination} Airport</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { icon: '⏱️', label: 'Duration', value: flight.duration },
+                  { icon: '💺', label: 'Seats', value: `${flight.availableSeats} Left` },
+                  { icon: '🌍', label: 'Offset', value: '100% Carbon' },
+                  { icon: '🧳', label: 'Luggage', value: '1 Checked Bag' },
+                ].map((stat, idx) => (
+                  <div key={idx} className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                    <div className="text-3xl mb-3">{stat.icon}</div>
+                    <div className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-1">{stat.label}</div>
+                    <div className="text-sm font-bold text-gray-900">{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
 
-          <div className="text-center">
-            <div className="text-4xl font-black text-gray-900">{flight.destination}</div>
-            <div className="text-sm font-medium text-emerald-700 mt-2">
-              {new Date(flight.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {/* Sticky Booking Widget (Right) */}
+          <div className="lg:col-span-5 xl:col-span-4 mt-16 lg:mt-0 relative">
+            <div className="sticky top-32">
+              
+              <div className="bg-white rounded-[2rem] shadow-2xl shadow-emerald-900/10 border border-gray-100 overflow-hidden relative">
+                <div className="p-8 pb-6 border-b border-gray-50 bg-gradient-to-b from-gray-50 to-white">
+                  <div className="flex justify-between items-end mb-2">
+                    <p className="text-4xl font-black text-gray-900 tracking-tight">${flight.price}</p>
+                    <p className="text-sm font-bold text-gray-400 mb-1">/ passenger</p>
+                  </div>
+                  <p className="text-sm font-medium text-gray-500">Includes mandatory carbon offset fee.</p>
+                </div>
+
+                <div className="p-8">
+                  <button className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl shadow-xl shadow-emerald-600/20 transition-all hover:-translate-y-1 active:scale-95 text-lg">
+                    Book Flight
+                  </button>
+                  <p className="text-center text-xs text-gray-400 font-bold mt-4">E-ticket delivered instantly</p>
+                </div>
+              </div>
+              
             </div>
-            <div className="text-xs text-gray-500">{new Date(flight.arrivalTime).toLocaleDateString()}</div>
           </div>
-        </div>
 
-        <div className="bg-emerald-50 rounded-2xl p-4 flex items-center justify-between mb-8">
-          <div className="flex items-center text-emerald-800">
-            <span className="mr-3 text-lg">🧳</span>
-            <span className="font-medium">Baggage Allowance:</span>
-          </div>
-          <span className="font-bold text-emerald-900">{flight.baggageAllowance}</span>
         </div>
-
-        <button className="w-full py-4 bg-gray-900 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors shadow-lg">
-          Continue to Passenger Details
-        </button>
       </div>
     </div>
   );
