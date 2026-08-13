@@ -81,6 +81,23 @@ npm run dev
 - The **Frontend** will be available at: `http://localhost:3000`
 - The **Backend API** will be available at: `http://localhost:5000`
 
+## 📅 Upcoming Milestones
+
+- **Milestone M-3: Cart & Booking:** End-to-end checkout flow for reserving inventory (guest details, availability recheck).
+- **Milestone M-4: Commerce Rules:** Promo codes, referral validation, mock payment gateway, and order status histories.
+- **Milestone M-5: Operations:** Dedicated Admin Dashboard (user/order management) and Supplier Panel (inventory management).
+- **Milestone M-6: QA & Delivery:** Final responsive pass, deployment, and submission deliverables.
+
+---
+
+## Testing User Roles (Admin/Supplier)
+The authentication system currently supports `customer`, `supplier`, and `admin` roles. 
+While the dedicated Admin Panel frontend will be built in **M-5**, you can prepare an admin account today:
+1. Register a new account via the frontend at `http://localhost:3000/register`.
+2. Open your MongoDB Atlas dashboard and navigate to the `users` collection.
+3. Find your user document and manually change the `role` string from `"customer"` to `"admin"`.
+4. Log back in on the frontend—your backend API requests will now pass all admin-level RBAC middleware!
+
 ---
 
 ## Project Structure
