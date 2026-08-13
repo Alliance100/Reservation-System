@@ -14,7 +14,16 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Login failed');
+      }
+      login(data.token, data.user);
       router.push('/');
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -27,10 +36,7 @@ export default function Login() {
       <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-white">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
-            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm">
-              🍃
-            </div>
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h2>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Welcome Back</h2>
             <p className="mt-2 text-sm text-gray-600">
               Sign in to manage your eco-friendly bookings.
             </p>

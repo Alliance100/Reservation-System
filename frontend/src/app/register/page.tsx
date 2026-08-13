@@ -10,13 +10,22 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('customer');
   const [error, setError] = useState('');
-  const { register } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(name, email, password, role);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Registration failed');
+      }
+      login(data.token, data.user);
       router.push('/');
     } catch (err: any) {
       setError(err.message || 'Registration failed');
@@ -29,10 +38,7 @@ export default function Register() {
       <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-white">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
-            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm">
-              🌍
-            </div>
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Join EcoTravel</h2>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Join EcoTravel</h2>
             <p className="mt-2 text-sm text-gray-600">
               Create an account to discover sustainable trips.
             </p>
