@@ -1,18 +1,18 @@
-# Integrated Reservation System
+# EcoTravel Reservation Platform
 
-This is a reservation platform that brings several travel products into one application. Customers can search, compare, and reserve different types of travel options like hotels, buses, tours, and flights.
+This is a modern reservation platform that brings several travel products into one beautiful, eco-friendly application. Customers can search, compare, and reserve different types of sustainable travel options like eco hotels, EV buses, nature tours, and green flights.
 
 ## Technology Stack
 
 The project is built using a modern JavaScript stack:
-- Frontend: Next.js with Tailwind CSS for styling.
+- Frontend: Next.js with Tailwind CSS for styling (EcoTravel brand theme).
 - Backend: Node.js and Express.
 - Database: MongoDB.
 - Authentication: JWT and bcrypt.
 
 ## Current Progress
 
-We are building this project in phases. So far, we have completed the first two milestones:
+We are building this project in phases. So far, we have completed the following milestones:
 
 Milestone 1: Foundation
 We set up the project structure, separating the frontend and backend. We also implemented a complete authentication system with registration and login, including role-based access control for customers, suppliers, and admins. The frontend now has a layout with navigation and secure session handling.
@@ -20,12 +20,15 @@ We set up the project structure, separating the frontend and backend. We also im
 Milestone 2: Inventory and Search
 We created the database models for our four main travel categories: properties (hotels), buses, tours, and flights. We added a script to populate the database with realistic sample data. We also built the search API and the corresponding frontend pages to search and view detailed information for each travel product.
 
+Milestone 3: UI & Branding (EcoTravel)
+We performed a major design overhaul to establish the "EcoTravel" brand. This included modernizing the user interface with vibrant colors, a unified aesthetic across all product detail pages, and adding dynamic styling to the navigation and footer components.
+
 ## Upcoming Work
 
-- Milestone 3: Cart and Booking. We will build the checkout flow for reserving items.
-- Milestone 4: Commerce Rules. We will add promo codes, payments, and order tracking.
-- Milestone 5: Operations. We will build the admin and supplier dashboards.
-- Milestone 6: Quality Assurance. Final testing and deployment preparation.
+- Milestone 4: Cart and Booking. We will build the checkout flow for reserving items.
+- Milestone 5: Commerce Rules. We will add promo codes, payments, and order tracking.
+- Milestone 6: Operations. We will build the admin and supplier dashboards.
+- Milestone 7: Quality Assurance. Final testing and deployment preparation.
 
 ## How to Run the Project
 
