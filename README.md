@@ -1,119 +1,53 @@
-# EcoTravel - Integrated Reservation System
+# Integrated Reservation System
 
-This is a full-stack reservation marketplace built with Next.js (Frontend) and Node.js/Express (Backend), focused on eco-friendly travel products including Hotels, EV Buses, Nature Tours, and Flights.
-
-## Overview
-This repository contains the codebase for a scalable reservation platform. It allows customers to seamlessly search, compare, and eventually reserve various travel products all within one unified interface.
+This is a reservation platform that brings several travel products into one application. Customers can search, compare, and reserve different types of travel options like hotels, buses, tours, and flights.
 
 ## Technology Stack
-- **Frontend:** Next.js (App Router), React, Tailwind CSS v4, Google Fonts (Outfit)
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB Atlas (Mongoose)
-- **Authentication:** JWT (JSON Web Tokens), bcryptjs
-- **Payment:** Stripe (Upcoming - M4)
 
----
+The project is built using a modern JavaScript stack:
+- Frontend: Next.js with Tailwind CSS for styling.
+- Backend: Node.js and Express.
+- Database: MongoDB.
+- Authentication: JWT and bcrypt.
 
-## 🚀 Features Implemented So Far
+## Current Progress
 
-### Milestone M-1: Foundation & Authentication
-- **Monorepo Architecture:** Clean separation of `frontend` and `backend` in a single repository.
-- **Secure Authentication:** Full registration and login workflows with password hashing (`bcryptjs`) and secure JWT generation.
-- **Role-Based Access Control (RBAC):** Built-in support for `customer`, `supplier`, and `admin` roles, protected via backend middleware.
-- **Session Persistence:** Custom React `AuthProvider` Context that automatically validates and restores user sessions across browser refreshes.
+We are building this project in phases. So far, we have completed the first two milestones:
 
-### Milestone M-2: Inventory & Search
-- **Data Modeling:** Distinct, robust Mongoose schemas for `Property` (Hotels/Hostels), `Bus`, `Tour`, and `Flight`.
-- **Database Seeder:** Automated mock data injection script (`backend/seeder.js`) for instant inventory testing.
-- **Global Search API:** A unified backend search controller that filters inventory by type, location, and price ranges.
-- **Custom UI/UX Theme:** 
-  - Implementation of a custom "Green/White" aesthetic (`emerald` palette).
-  - Integration of modern "Outfit" typography.
-  - Tabbed Search Hero Section and dynamic `ProductCard` components.
-- **Dedicated Detail Pages:** Responsive, unique layouts for Hotel, Bus, Tour, and Flight detail views.
+Milestone 1: Foundation
+We set up the project structure, separating the frontend and backend. We also implemented a complete authentication system with registration and login, including role-based access control for customers, suppliers, and admins. The frontend now has a layout with navigation and secure session handling.
 
----
+Milestone 2: Inventory and Search
+We created the database models for our four main travel categories: properties (hotels), buses, tours, and flights. We added a script to populate the database with realistic sample data. We also built the search API and the corresponding frontend pages to search and view detailed information for each travel product.
 
-## Prerequisites
-- Node.js v18+
-- MongoDB instance (Atlas or local)
+## Upcoming Work
 
-## Getting Started (Single Command Run)
+- Milestone 3: Cart and Booking. We will build the checkout flow for reserving items.
+- Milestone 4: Commerce Rules. We will add promo codes, payments, and order tracking.
+- Milestone 5: Operations. We will build the admin and supplier dashboards.
+- Milestone 6: Quality Assurance. Final testing and deployment preparation.
 
-We have configured `concurrently` in the root folder, allowing you to run both the frontend and backend servers simultaneously with one command.
+## How to Run the Project
 
-### 1. Environment Setup
-**Backend:**
-Navigate to `backend/` and copy `.env.example` to `.env`. Ensure your MongoDB connection string is set:
-```env
-PORT=5000
-NODE_ENV=development
-MONGO_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/reservation_system
-JWT_SECRET=your_secret_here
-```
+You will need Node.js and a MongoDB database to run this project.
 
-**Frontend:**
-Navigate to `frontend/` and copy `.env.example` to `.env.local`:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
+1. First, make sure you have your environment variables set up. 
+In the backend folder, create a .env file based on .env.example with your MongoDB connection string and a secret key for JWT. 
+In the frontend folder, create a .env.local file based on .env.example.
 
-### 2. Install Dependencies
-In the root directory of the project, run:
-```bash
+2. Install all dependencies from the root of the project:
 npm run install-all
-```
-*(This command will install root dependencies, then install backend and frontend dependencies automatically).*
 
-### 3. Seed the Database
-To populate your MongoDB with the mock travel inventory for testing:
-```bash
+3. If this is your first time, you should populate the database with sample data:
 cd backend
 node seeder.js
 cd ..
-```
 
-### 4. Start the Application
-In the root directory, simply run:
-```bash
+4. Start both the frontend and backend servers at the same time:
 npm run dev
-```
-- The **Frontend** will be available at: `http://localhost:3000`
-- The **Backend API** will be available at: `http://localhost:5000`
 
-## 📅 Upcoming Milestones
+The frontend will be running on port 3000 and the backend API will be running on port 5000.
 
-- **Milestone M-3: Cart & Booking:** End-to-end checkout flow for reserving inventory (guest details, availability recheck).
-- **Milestone M-4: Commerce Rules:** Promo codes, referral validation, mock payment gateway, and order status histories.
-- **Milestone M-5: Operations:** Dedicated Admin Dashboard (user/order management) and Supplier Panel (inventory management).
-- **Milestone M-6: QA & Delivery:** Final responsive pass, deployment, and submission deliverables.
+## Testing User Roles
 
----
-
-## Testing User Roles (Admin/Supplier)
-The authentication system currently supports `customer`, `supplier`, and `admin` roles. 
-While the dedicated Admin Panel frontend will be built in **M-5**, you can prepare an admin account today:
-1. Register a new account via the frontend at `http://localhost:3000/register`.
-2. Open your MongoDB Atlas dashboard and navigate to the `users` collection.
-3. Find your user document and manually change the `role` string from `"customer"` to `"admin"`.
-4. Log back in on the frontend—your backend API requests will now pass all admin-level RBAC middleware!
-
----
-
-## Project Structure
-```text
-/
-├── backend/
-│   ├── config/          # DB connections
-│   ├── controllers/     # Route logic (Auth, Search)
-│   ├── middleware/      # JWT protection & Role validation
-│   ├── models/          # Mongoose Schemas (User, Property, Bus, Tour, Flight)
-│   ├── routes/          # Express Routers
-│   ├── seeder.js        # Data seeding script
-│   └── server.js        # Express entry point
-├── frontend/
-│   ├── src/app/         # Next.js App Router pages (Search, Auth, Detail pages)
-│   ├── src/components/  # Reusable UI components (Navbar, AuthProvider)
-│   └── ...
-└── package.json         # Root workspace commands
-```
+The system supports customer, supplier, and admin roles. The dedicated admin panel will be built in a later milestone, but you can prepare an admin account now. Just register a normal account on the frontend, then open your MongoDB database and manually change your user's role field from "customer" to "admin".
