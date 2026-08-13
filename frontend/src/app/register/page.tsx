@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -9,6 +10,7 @@ export default function Register() {
   const [role, setRole] = useState("customer");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ export default function Register() {
       const data = await res.json();
       
       if (data.success) {
-        localStorage.setItem("token", data.token);
+        login(data.token, data.user);
         router.push("/");
       } else {
         setError(data.message || "Registration failed");

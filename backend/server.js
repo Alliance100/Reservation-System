@@ -18,7 +18,10 @@ app.use(cors());
 
 // Mount routers
 const authRoutes = require('./routes/authRoutes');
+const searchRoutes = require('./routes/searchRoutes');
+
 app.use('/api/auth', authRoutes);
+app.use('/api/search', searchRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

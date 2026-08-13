@@ -1,0 +1,19 @@
+const mongoose = require('mongoose');
+
+const tourSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  durationDays: { type: Number, required: true },
+  itinerary: [{
+    day: Number,
+    description: String
+  }],
+  price: { type: Number, required: true },
+  dates: [Date],
+  pickupPoint: { type: String, required: true },
+  inclusions: [String],
+  exclusions: [String],
+  images: [String],
+  maxGroupSize: { type: Number, required: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Tour', tourSchema);
