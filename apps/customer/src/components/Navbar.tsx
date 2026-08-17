@@ -63,9 +63,14 @@ export default function Navbar() {
                           </Link>
                         )}
                         {user.role === 'customer' && (
-                          <Link href="/bookings" className="text-sm font-bold text-emerald-600 hover:text-emerald-500 transition-colors">
-                            My Bookings
-                          </Link>
+                          <>
+                            <Link href="/bookings" className="text-sm font-bold text-emerald-600 hover:text-emerald-500 transition-colors">
+                              My Bookings
+                            </Link>
+                            <Link href="/profile" className="text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                              Profile
+                            </Link>
+                          </>
                         )}
 
                         <button

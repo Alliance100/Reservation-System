@@ -104,8 +104,7 @@ exports.getSearchSuggestions = async (req, res) => {
 
     if (type === 'hotel') {
       const locations = await Property.distinct('location.city');
-      const names = await Property.distinct('name');
-      suggestions = [...new Set([...locations, ...names])].filter(Boolean);
+      suggestions = locations.filter(Boolean);
     } else if (type === 'bus') {
       const dests = await Bus.distinct('destination');
       suggestions = dests.filter(Boolean);

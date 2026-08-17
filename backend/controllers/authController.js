@@ -13,7 +13,7 @@ const generateToken = (id) => {
 // @access  Public
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body; // Never trust role from client
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -21,12 +21,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
-    // Create user
+    // Create user — always as customer; role can only be changed by an admin
     const user = await User.create({
       name,
       email,
       password,
-      role: role || 'customer',
+      role: 'customer',
     });
 
     res.status(201).json({
@@ -97,7 +97,9 @@ exports.getMe = async (req, res) => {
 
 exports.updateMe = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+    // Prevent users from escalating their own role or changing password here
+    const { role, password, ...safeData } = req.body;
+    const user = await User.findByIdAndUpdate(req.user.id, safeData, {
       new: true,
       runValidators: true
     });

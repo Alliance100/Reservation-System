@@ -189,7 +189,9 @@ function ProductCard({ item, type }: { item: any, type: string }) {
               <div className="text-right ml-4">
                 <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">From</p>
                 <p className="text-3xl font-black text-gray-900 tracking-tight">${price}</p>
-                <p className="text-xs text-gray-500 font-medium mt-1">per night</p>
+                <p className="text-xs text-gray-500 font-medium mt-1">
+                  {type === 'hotel' ? 'per night' : type === 'bus' ? 'per seat' : type === 'tour' ? 'per person' : 'per ticket'}
+                </p>
               </div>
             </div>
 
@@ -202,15 +204,7 @@ function ProductCard({ item, type }: { item: any, type: string }) {
             </div>
           </div>
           
-          <div className="mt-8 flex items-center justify-between border-t border-gray-50 pt-6">
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-xs">👤</div>
-                <div className="w-8 h-8 rounded-full bg-emerald-200 border-2 border-white flex items-center justify-center text-xs">👤</div>
-              </div>
-              <span className="text-xs font-bold text-gray-400 ml-2">Booked 12 times today</span>
-            </div>
-            
+          <div className="mt-8 flex items-center justify-end border-t border-gray-50 pt-6">
             <div className="inline-flex items-center justify-center px-6 py-3 bg-emerald-50 text-emerald-700 font-black rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm group-hover:shadow-lg group-hover:shadow-emerald-200">
               View Details
             </div>

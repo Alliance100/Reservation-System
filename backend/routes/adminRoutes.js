@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAdminStats, getAllBookings, getAllUsers, createCoupon, deleteCoupon, deleteUser, updateBookingStatus } = require('../controllers/adminController');
+const { getAdminStats, getAllBookings, getAllUsers, createCoupon, deleteCoupon, getAllCoupons, deleteUser, updateBookingStatus, updateUserRole } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -13,7 +13,9 @@ router.put('/bookings/:id/status', updateBookingStatus);
 
 router.get('/users', getAllUsers);
 router.delete('/users/:id', deleteUser);
+router.put('/users/:id/role', updateUserRole);
 
+router.get('/coupons', getAllCoupons);
 router.post('/coupons', createCoupon);
 router.delete('/coupons/:id', deleteCoupon);
 

@@ -449,8 +449,13 @@ export default function SupplierDashboard() {
                   <input type="text" placeholder="Origin" required onChange={e => setNewItemData({...newItemData, origin: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
                   <input type="text" placeholder="Destination" required onChange={e => setNewItemData({...newItemData, destination: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
                   <input type="number" placeholder="Price ($)" required onChange={e => setNewItemData({...newItemData, price: Number(e.target.value)})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
+                  <label className="block text-sm font-bold text-gray-700">Departure Time</label>
+                  <input type="datetime-local" required onChange={e => setNewItemData({...newItemData, departureTime: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
+                  <label className="block text-sm font-bold text-gray-700">Arrival Time</label>
+                  <input type="datetime-local" required onChange={e => setNewItemData({...newItemData, arrivalTime: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
                   <label className="block text-sm font-bold text-gray-700 mt-2">Upload Image</label>
                   <input type="file" accept="image/*" onChange={handleImageChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
+                  {newItemData.image && <img src={newItemData.image} alt="preview" className="w-full h-36 object-cover rounded-xl border border-gray-200" />}
                 </>
               )}
 
@@ -461,8 +466,13 @@ export default function SupplierDashboard() {
                   <input type="text" placeholder="Destination" required onChange={e => setNewItemData({...newItemData, destination: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
                   <input type="number" placeholder="Ticket Fare ($)" required onChange={e => setNewItemData({...newItemData, fare: Number(e.target.value)})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
                   <input type="number" placeholder="Total Seats" required onChange={e => setNewItemData({...newItemData, totalSeats: Number(e.target.value)})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
+                  <label className="block text-sm font-bold text-gray-700">Departure Time</label>
+                  <input type="datetime-local" required onChange={e => setNewItemData({...newItemData, departureTime: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
+                  <label className="block text-sm font-bold text-gray-700">Arrival Time</label>
+                  <input type="datetime-local" required onChange={e => setNewItemData({...newItemData, arrivalTime: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
                   <label className="block text-sm font-bold text-gray-700 mt-2">Upload Image</label>
                   <input type="file" accept="image/*" onChange={handleImageChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl" />
+                  {newItemData.image && <img src={newItemData.image} alt="preview" className="w-full h-36 object-cover rounded-xl border border-gray-200" />}
                 </>
               )}
 
