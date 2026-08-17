@@ -13,17 +13,24 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 
 // Mount routers
 const authRoutes = require('./routes/authRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const commerceRoutes = require('./routes/commerceRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const supplierRoutes = require('./routes/supplierRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/commerce', commerceRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/supplier', supplierRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

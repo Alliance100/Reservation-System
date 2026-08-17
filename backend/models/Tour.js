@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const tourSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   durationDays: { type: Number, required: true },
   itinerary: [{
     day: Number,

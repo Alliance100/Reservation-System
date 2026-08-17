@@ -8,7 +8,7 @@ const Flight = require('../models/Flight');
 // @access  Public
 exports.searchInventory = async (req, res) => {
   try {
-    const { type, location, minPrice, maxPrice } = req.query;
+    const { type, location, minPrice, maxPrice, sort } = req.query;
 
     if (!type) {
       return res.status(400).json({ success: false, message: 'Search type is required (hotel, bus, tour, flight)' });
@@ -19,7 +19,12 @@ exports.searchInventory = async (req, res) => {
     // Basic filtering based on type
     if (type === 'hotel') {
       const query = {};
-      if (location) query['location.city'] = { $regex: location, $options: 'i' };
+      if (location) {
+        query.$or = [
+          { 'location.city': { $regex: location, $options: 'i' } },
+          { name: { $regex: location, $options: 'i' } }
+        ];
+      }
       results = await Property.find(query);
       
       // Filter by room price if provided
@@ -56,12 +61,65 @@ exports.searchInventory = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid search type' });
     }
 
+    // Sorting logic
+    if (sort) {
+      if (type === 'hotel') {
+        if (sort === 'price_asc') {
+          results.sort((a, b) => (a.rooms[0]?.price || 0) - (b.rooms[0]?.price || 0));
+        } else if (sort === 'price_desc') {
+          results.sort((a, b) => (b.rooms[0]?.price || 0) - (a.rooms[0]?.price || 0));
+        } else if (sort === 'rating_desc') {
+          results.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        }
+      } else if (type === 'bus') {
+        if (sort === 'price_asc') {
+          results.sort((a, b) => a.fare - b.fare);
+        } else if (sort === 'price_desc') {
+          results.sort((a, b) => b.fare - a.fare);
+        }
+      } else if (type === 'tour' || type === 'flight') {
+        if (sort === 'price_asc') {
+          results.sort((a, b) => a.price - b.price);
+        } else if (sort === 'price_desc') {
+          results.sort((a, b) => b.price - a.price);
+        }
+      }
+    }
+
     res.status(200).json({
       success: true,
       count: results.length,
       data: results
     });
 
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getSearchSuggestions = async (req, res) => {
+  try {
+    const { type } = req.query;
+    let suggestions = [];
+
+    if (type === 'hotel') {
+      const locations = await Property.distinct('location.city');
+      const names = await Property.distinct('name');
+      suggestions = [...new Set([...locations, ...names])].filter(Boolean);
+    } else if (type === 'bus') {
+      const dests = await Bus.distinct('destination');
+      suggestions = dests.filter(Boolean);
+    } else if (type === 'tour') {
+      const titles = await Tour.distinct('title');
+      suggestions = titles.filter(Boolean);
+    } else if (type === 'flight') {
+      const dests = await Flight.distinct('destination');
+      suggestions = dests.filter(Boolean);
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid type' });
+    }
+
+    res.status(200).json({ success: true, data: suggestions });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

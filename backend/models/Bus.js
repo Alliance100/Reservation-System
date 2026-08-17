@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const busSchema = new mongoose.Schema({
   operator: { type: String, required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   origin: { type: String, required: true },
   destination: { type: String, required: true },
   departureTime: { type: Date, required: true },

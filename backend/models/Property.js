@@ -10,6 +10,7 @@ const roomSchema = new mongoose.Schema({
 
 const propertySchema = new mongoose.Schema({
   name: { type: String, required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   type: { type: String, enum: ['hotel', 'hostel'], required: true },
   location: {
     city: { type: String, required: true },

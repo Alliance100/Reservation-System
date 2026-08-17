@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'supplier', 'admin'],
     default: 'customer',
   },
+  phone: String,
+  savedTraveler: {
+    name: String,
+    passport: String
+  },
   profile: {
     phone: String,
     address: String,
