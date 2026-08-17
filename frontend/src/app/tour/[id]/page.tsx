@@ -1,12 +1,30 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useCart } from '@/components/CartProvider';
 
 export default function TourDetail() {
   const params = useParams();
   const id = params.id as string;
   const [tour, setTour] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleReserve = () => {
+    if (!tour) return;
+    addToCart({
+      id: Date.now().toString(),
+      itemModel: 'tour',
+      itemId: tour._id,
+      name: tour.title,
+      price: tour.price,
+      quantity: 1,
+      image: tour.images && tour.images.length > 0 ? tour.images[0] : ''
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
 
   useEffect(() => {
     const fetchTour = async () => {
@@ -168,8 +186,12 @@ export default function TourDetail() {
                     </div>
                   </div>
 
-                  <button className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl shadow-xl shadow-emerald-600/20 transition-all hover:-translate-y-1 active:scale-95 text-lg">
-                    Check Availability
+                  <button 
+                    onClick={handleReserve}
+                    disabled={added}
+                    className={`w-full py-4 text-white font-black rounded-2xl shadow-xl transition-all hover:-translate-y-1 active:scale-95 text-lg ${added ? 'bg-gray-900 shadow-gray-900/20' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'}`}
+                  >
+                    {added ? 'Added to Cart ✓' : 'Book Tour'}
                   </button>
                   <p className="text-center text-xs text-gray-400 font-bold mt-4">No charge until confirmed</p>
                 </div>
