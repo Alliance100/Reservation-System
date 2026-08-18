@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "concurrently \"npm run server --prefix backend\" \"npm run dev --prefix apps/customer\" \"npm run dev --prefix apps/supplier\" \"npm run dev --prefix apps/admin\"",
     "install-all": "npm install && npm install --prefix backend && npm install --prefix apps/customer && npm install --prefix apps/supplier && npm install --prefix apps/admin",
+    "seed": "node backend/seed.js",
+    "seed-users": "node backend/seedUsers.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

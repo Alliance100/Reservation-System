@@ -19,7 +19,19 @@ exports.protect = async (req, res, next) => {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id);
+    
+    // Guard: user may have been deleted after token was issued
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Account no longer exists. Please log in again.' });
+    }
+
+    // Guard: supplier accounts must be approved by admin
+    if (user.role === 'supplier' && (!user.isVerified || user.verificationStatus !== 'approved')) {
+      return res.status(403).json({ success: false, message: 'Supplier account is pending administrator verification.' });
+    }
+    
+    req.user = user;
     next();
   } catch (err) {
     return res.status(401).json({ success: false, message: 'Not authorized to access this route' });

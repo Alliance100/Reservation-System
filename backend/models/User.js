@@ -26,6 +26,15 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'supplier', 'admin'],
     default: 'customer',
   },
+  isVerified: {
+    type: Boolean,
+    default: true,
+  },
+  verificationStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'approved',
+  },
   phone: String,
   savedTraveler: {
     name: String,

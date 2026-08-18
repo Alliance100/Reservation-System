@@ -8,12 +8,13 @@ const Bus = require('./models/Bus');
 const Tour = require('./models/Tour');
 const Flight = require('./models/Flight');
 const Coupon = require('./models/Coupon');
+const Booking = require('./models/Booking');
 
 async function seedData() {
   try {
     console.log('Connecting to database...');
     await mongoose.connect(process.env.MONGO_URI);
-    
+
     console.log('Clearing old data...');
     await User.deleteMany({});
     await Property.deleteMany({});
@@ -21,12 +22,13 @@ async function seedData() {
     await Tour.deleteMany({});
     await Flight.deleteMany({});
     await Coupon.deleteMany({});
+    await Booking.deleteMany({});
 
     console.log('Creating Admin...');
     const admin = await User.create({
       name: 'Global Admin',
       email: 'admin@ecotravel.com',
-      password: '123456',
+      password: 'password123',
       role: 'admin'
     });
 
@@ -34,7 +36,7 @@ async function seedData() {
     const supplier = await User.create({
       name: 'Global Supplier',
       email: 'supplier@ecotravel.com',
-      password: '123456',
+      password: 'password123',
       role: 'supplier'
     });
 
@@ -42,7 +44,7 @@ async function seedData() {
     const customer = await User.create({
       name: 'Demo Customer',
       email: 'customer@ecotravel.com',
-      password: '123456',
+      password: 'password123',
       role: 'customer'
     });
 
@@ -113,6 +115,84 @@ async function seedData() {
       minPurchaseAmount: 50,
       validUntil: new Date(Date.now() + 86400000 * 30) // Valid for 30 days
     });
+
+    console.log('Creating Realistic Bookings for Admin & Supplier Analytics...');
+    const now = new Date();
+    await Booking.insertMany([
+      {
+        user: customer._id,
+        items: [{ itemType: 'hotel', itemId: null, name: 'Alpine Solar Sanctuary', price: 185, quantity: 2 }],
+        totalAmount: 370,
+        status: 'completed',
+        createdAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000 + 3600000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'bus', itemId: null, name: 'Nordic Clean Express', price: 48, quantity: 2 }],
+        totalAmount: 96,
+        status: 'confirmed',
+        createdAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000 + 7200000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'tour', itemId: null, name: 'Amazon Rainforest Expedition', price: 450, quantity: 1 }],
+        totalAmount: 450,
+        status: 'confirmed',
+        createdAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000 + 10800000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'flight', itemId: null, name: 'EcoAir EA-101', price: 290, quantity: 2 }],
+        totalAmount: 580,
+        status: 'completed',
+        createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 14400000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'hotel', itemId: null, name: 'Swiss Eco Lodge', price: 240, quantity: 3 }],
+        totalAmount: 720,
+        status: 'confirmed',
+        createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000 + 18000000),
+      },
+      {
+        user: customer._id,
+        items: [
+          { itemType: 'bus', itemId: null, name: 'GreenLine Electric Bus', price: 55, quantity: 2 },
+          { itemType: 'tour', itemId: null, name: 'Costa Rica Canopy Trek', price: 320, quantity: 1 }
+        ],
+        totalAmount: 430,
+        status: 'confirmed',
+        createdAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 21600000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'hotel', itemId: null, name: 'Santorini Solar Cliff Villa', price: 295, quantity: 2 }],
+        totalAmount: 590,
+        status: 'confirmed',
+        createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'tour', itemId: null, name: 'Nordic Aurora Experience', price: 620, quantity: 1 }],
+        totalAmount: 620,
+        status: 'completed',
+        createdAt: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'hotel', itemId: null, name: 'Bali Bamboo Villa', price: 350, quantity: 2 }],
+        totalAmount: 700,
+        status: 'completed',
+        createdAt: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000),
+      },
+      {
+        user: customer._id,
+        items: [{ itemType: 'flight', itemId: null, name: 'Zero-Emission Flight Z-204', price: 410, quantity: 1 }],
+        totalAmount: 410,
+        status: 'confirmed',
+        createdAt: new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000),
+      },
+    ]);
 
     console.log('✅ SEEDING COMPLETE! All demo data loaded successfully.');
     process.exit(0);

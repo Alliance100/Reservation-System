@@ -12,6 +12,7 @@ const flightSchema = new mongoose.Schema({
   fareClass: { type: String, enum: ['Economy', 'Business', 'First'], required: true },
   price: { type: Number, required: true },
   baggageAllowance: { type: String, required: true },
+  rating: { type: Number, default: 0 },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Flight', flightSchema);

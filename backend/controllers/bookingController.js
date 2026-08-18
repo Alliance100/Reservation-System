@@ -1,4 +1,6 @@
 const Booking = require('../models/Booking');
+const User = require('../models/User');
+const { sendBookingConfirmation, sendStatusUpdateEmail } = require('../utils/emailService');
 
 // @desc    Create new booking
 // @route   POST /api/bookings
@@ -9,6 +11,15 @@ exports.createBooking = async (req, res) => {
 
     if (!items || items.length === 0) {
       return res.status(400).json({ success: false, message: 'No items to book' });
+    }
+
+    // Validate quantity per item (prevent inventory exhaustion)
+    for (const item of items) {
+      const qty = parseInt(item.quantity, 10);
+      if (!qty || qty < 1 || qty > 20) {
+        return res.status(400).json({ success: false, message: `Invalid quantity for item. Must be between 1 and 20.` });
+      }
+      item.quantity = qty;
     }
 
     // Idempotency / Duplicate Prevention Check
@@ -38,13 +49,16 @@ exports.createBooking = async (req, res) => {
         dbItem = await Property.findById(itemId);
         if (!dbItem) throw new Error(`Hotel not found: ${itemId}`);
         
-        // For simplicity, we just use the first room type's price and availability
-        const room = dbItem.rooms[0];
+        const requestedRoomType = item.details?.roomType;
+        const room = requestedRoomType 
+          ? (dbItem.rooms.find(r => r.roomType?.toLowerCase() === requestedRoomType.toLowerCase()) || dbItem.rooms[0])
+          : dbItem.rooms[0];
+
         if (!room) throw new Error(`No rooms available for hotel: ${dbItem.name}`);
-        if (room.availableQuantity < quantity) throw new Error(`Not enough rooms available for: ${dbItem.name}`);
+        if (room.availableQuantity < quantity) throw new Error(`Not enough ${room.roomType} rooms available for: ${dbItem.name}`);
         
         unitPrice = room.price;
-        itemName = dbItem.name;
+        itemName = requestedRoomType ? `${dbItem.name} (${room.roomType})` : dbItem.name;
         
         // Decrement inventory
         room.availableQuantity -= quantity;
@@ -89,7 +103,10 @@ exports.createBooking = async (req, res) => {
         itemId: itemId,
         name: itemName,
         price: unitPrice,
-        quantity: quantity
+        quantity: quantity,
+        selectedDate: item.selectedDate || item.date || item.details?.selectedDate || new Date().toISOString().split('T')[0],
+        selectedTime: item.selectedTime || item.time || item.details?.selectedTime || 'Standard Slot',
+        details: item.details || {}
       });
     }
 
@@ -102,6 +119,11 @@ exports.createBooking = async (req, res) => {
     });
 
     const createdBooking = await booking.save();
+
+    // Trigger transactional booking confirmation email
+    if (req.user && req.user.email) {
+      sendBookingConfirmation(req.user.email, req.user.name, createdBooking).catch(() => {});
+    }
 
     res.status(201).json({ success: true, data: createdBooking });
   } catch (error) {
@@ -146,9 +168,16 @@ exports.cancelBooking = async (req, res) => {
       if (item.itemType === 'hotel') {
         const Property = require('../models/Property');
         const dbItem = await Property.findById(item.itemId);
-        if (dbItem && dbItem.rooms[0]) {
-          dbItem.rooms[0].availableQuantity += item.quantity;
-          await dbItem.save();
+        if (dbItem) {
+          // Restore the specific room type that was booked
+          const bookedRoomType = item.details?.roomType;
+          const roomToRestore = bookedRoomType
+            ? (dbItem.rooms.find(r => r.roomType?.toLowerCase() === bookedRoomType.toLowerCase()) || dbItem.rooms[0])
+            : dbItem.rooms[0];
+          if (roomToRestore) {
+            roomToRestore.availableQuantity += item.quantity;
+            await dbItem.save();
+          }
         }
       } else if (item.itemType === 'bus') {
         const Bus = require('../models/Bus');
@@ -162,6 +191,11 @@ exports.cancelBooking = async (req, res) => {
 
     booking.status = 'cancelled';
     await booking.save();
+
+    // Trigger transactional cancellation email
+    if (req.user && req.user.email) {
+      sendStatusUpdateEmail(req.user.email, req.user.name, booking._id.toString(), 'cancelled').catch(() => {});
+    }
 
     res.status(200).json({ success: true, data: booking });
   } catch (error) {

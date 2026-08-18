@@ -1,8 +1,25 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── SMOOTH SCROLLING & BASE STYLING ────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 :root {
   --background: #F7FBF9;
   --foreground: #1f2937;
+}
+
+html.dark {
+  --background: #0b1310;
+  --foreground: #f3f4f6;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -13,4 +30,310 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-x: hidden;
+}
+
+/* ── HARDWARE-ACCELERATED SMOOTH KEYFRAME ANIMATIONS (NO TILT) ──────────────── */
+@keyframes floatY {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+@keyframes floatYReverse {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, 8px, 0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale3d(1.04, 1.04, 1);
+  }
+}
+
+@keyframes rotateMesh {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(360deg);
+  }
+}
+
+@keyframes bobbleGentle {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+.animate-float-3d,
+.animate-float-y {
+  animation: floatY 6s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.animate-float-3d-slow {
+  animation: floatY 9s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.animate-float-3d-reverse,
+.animate-float-y-reverse {
+  animation: floatYReverse 7s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.animate-bobble-3d,
+.animate-bobble-gentle {
+  animation: bobbleGentle 5s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.animate-mesh-3d {
+  animation: rotateMesh 30s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.animate-glow-3d {
+  animation: pulseGlow 4s ease-in-out infinite;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Clean, Sleek Card Hover Elevation (Smooth, No 3D Tilt) */
+.card-3d-depth,
+.card-interactive {
+  will-change: transform, box-shadow;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  box-shadow: 
+    0 4px 20px -4px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+.card-3d-depth:hover,
+.card-interactive:hover {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: 
+    0 20px 35px -10px rgba(0, 0, 0, 0.08),
+    0 10px 20px -5px rgba(16, 185, 129, 0.12);
+}
+
+/* Dynamic Dark Mode overrides */
+html.dark body {
+  background-color: #0b1310 !important;
+  color: #f3f4f6 !important;
+}
+
+html.dark .bg-white {
+  background-color: #13201b !important;
+}
+
+html.dark .bg-white\/80 {
+  background-color: rgba(19, 32, 27, 0.85) !important;
+}
+
+html.dark .bg-white\/90 {
+  background-color: rgba(19, 32, 27, 0.95) !important;
+}
+
+html.dark .bg-white\/95 {
+  background-color: rgba(19, 32, 27, 0.95) !important;
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-gray-50\/40,
+html.dark .bg-gray-50\/50,
+html.dark .bg-gray-50\/60,
+html.dark .bg-gray-50\/80,
+html.dark .bg-gray-50\/90 {
+  background-color: #162620 !important;
+}
+
+html.dark .bg-gray-100,
+html.dark .bg-gray-100\/80 {
+  background-color: #1c3029 !important;
+}
+
+html.dark .bg-gray-200,
+html.dark .bg-gray-200\/80 {
+  background-color: #274238 !important;
+}
+
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-50\/60 {
+  background-color: #11281e !important;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-50 {
+  border-color: #1f332b !important;
+}
+
+html.dark .border-emerald-100,
+html.dark .border-emerald-100\/80 {
+  border-color: #234235 !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-gray-800 {
+  color: #f9fafb !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #162620 !important;
+  color: #f9fafb !important;
+  border-color: #274238 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-xl,
+html.dark .shadow-2xl {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .card-3d-depth,
+html.dark .card-interactive {
+  box-shadow: 
+    0 4px 20px -4px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+html.dark .card-3d-depth:hover,
+html.dark .card-interactive:hover {
+  box-shadow: 
+    0 20px 40px -10px rgba(0, 0, 0, 0.6),
+    0 0 25px rgba(16, 185, 129, 0.15),
+    0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+/* ── EXACT SINGLE-PAGE PRINT STYLESHEET ─────────────────────────────────────── */
+@media print {
+  @page {
+    size: portrait;
+    margin: 8mm 10mm;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    height: auto !important;
+    overflow: visible !important;
+    font-size: 10pt !important;
+  }
+
+  /* Hide navigation, header, footer, interactive buttons, modal overlays */
+  nav,
+  header,
+  footer,
+  button,
+  .print\:hidden,
+  .modal-backdrop {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Isolate only the voucher modal and its contents */
+  .voucher-modal-container,
+  .voucher-modal-inner,
+  .printable-ticket,
+  .printable-ticket * {
+    visibility: visible !important;
+  }
+
+  .voucher-modal-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .voucher-modal-inner {
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: transparent !important;
+  }
+
+  .printable-ticket {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 14px 18px !important;
+    background: #ffffff !important;
+    border: 1.5px dashed #059669 !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Force background colors and borders to print sharply */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
 }

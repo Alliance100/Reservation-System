@@ -13,7 +13,7 @@ const generateToken = (id) => {
 // @access  Public
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body; // Never trust role from client
+    const { name, email, password, role } = req.body;
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -21,14 +21,38 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
-    // Create user — always as customer; role can only be changed by an admin
+    // Role handling: Allow 'supplier' registration (with pending verification).
+    // Admin can never be registered from public form.
+    const isSupplier = role === 'supplier';
+    const assignedRole = isSupplier ? 'supplier' : 'customer';
+
     const user = await User.create({
       name,
       email,
       password,
-      role: 'customer',
+      role: assignedRole,
+      isVerified: !isSupplier, // Customers are verified by default; Suppliers need admin verification
+      verificationStatus: isSupplier ? 'pending' : 'approved',
     });
 
+    // If registering as a supplier, return pending verification notification without immediate login token
+    if (isSupplier) {
+      return res.status(201).json({
+        success: true,
+        pendingVerification: true,
+        message: 'Supplier registration submitted successfully! Your account is pending verification by the administrator.',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          isVerified: false,
+          verificationStatus: 'pending',
+        }
+      });
+    }
+
+    // For customers, return active token
     res.status(201).json({
       success: true,
       token: generateToken(user._id),
@@ -37,6 +61,8 @@ exports.register = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        isVerified: true,
+        verificationStatus: 'approved',
       }
     });
   } catch (err) {
@@ -68,6 +94,25 @@ exports.login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
+    // Check supplier verification status
+    if (user.role === 'supplier') {
+      if (user.verificationStatus === 'pending' || user.isVerified === false) {
+        return res.status(403).json({
+          success: false,
+          isPendingVerification: true,
+          message: 'Your supplier account is pending verification by the platform administrator. You will be granted access once approved.'
+        });
+      }
+
+      if (user.verificationStatus === 'rejected') {
+        return res.status(403).json({
+          success: false,
+          isRejected: true,
+          message: 'Your supplier account application was not approved by the administrator.'
+        });
+      }
+    }
+
     res.status(200).json({
       success: true,
       token: generateToken(user._id),
@@ -76,6 +121,8 @@ exports.login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        isVerified: user.isVerified ?? true,
+        verificationStatus: user.verificationStatus ?? 'approved',
       }
     });
   } catch (err) {

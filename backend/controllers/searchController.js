@@ -26,12 +26,12 @@ exports.searchInventory = async (req, res) => {
         ];
       }
       results = await Property.find(query);
-      
+
       // Filter by room price if provided
       if (minPrice || maxPrice) {
         results = results.filter(prop => {
-          return prop.rooms.some(room => 
-            (!minPrice || room.price >= Number(minPrice)) && 
+          return prop.rooms.some(room =>
+            (!minPrice || room.price >= Number(minPrice)) &&
             (!maxPrice || room.price <= Number(maxPrice))
           );
         });

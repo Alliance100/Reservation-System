@@ -191,22 +191,32 @@ export default function Checkout() {
                   <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">1</span>
                   Guest Details
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
-                    <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
+                    <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required minLength={2} maxLength={50} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
-                    <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
+                    <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required minLength={2} maxLength={50} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-2">
                     <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
                     <input type="email" name="email" value={formData.email} onChange={handleInputChange} required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-2">
                     <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="+1 234 567 8900"
+                      pattern="[+]?[0-9\s\-().]{7,20}"
+                      title="Please enter a valid phone number (7–20 digits)"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+                    />
                   </div>
                 </div>
               </section>
@@ -265,7 +275,6 @@ export default function Checkout() {
                     <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                   </div>
                   <div className="relative z-10">
-                    <p className="text-gray-900 font-bold mb-2">Simulated Payment for Milestone 4</p>
                     <p className="text-sm text-gray-600 mb-4">Use a card ending in 4242 to test a successful payment.</p>
                     <div className="relative">
                       <input 
@@ -318,16 +327,26 @@ export default function Checkout() {
               
               <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto pr-4 no-scrollbar">
                 {cart.map((item, idx) => (
-                  <div key={`${item.id}-${idx}`} className="flex gap-4">
+                  <div key={`${item.id}-${idx}`} className="flex gap-4 items-start">
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-emerald-800 flex-shrink-0">
                       {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-cover" />}
                     </div>
                     <div className="flex-1 flex flex-col justify-center">
                       <h4 className="text-white font-bold leading-snug">{item.name}</h4>
-                      <p className="text-emerald-200 text-sm">{item.itemModel.toUpperCase()} • Qty {item.quantity}</p>
+                      <p className="text-emerald-200 text-xs font-semibold">{item.itemModel.toUpperCase()} • Qty {item.quantity}</p>
+                      {item.selectedDate && (
+                        <p className="text-emerald-300 text-[11px] font-bold mt-1 flex items-center gap-1">
+                          <span>📅</span> {item.selectedDate}
+                        </p>
+                      )}
+                      {item.selectedTime && (
+                        <p className="text-emerald-200/90 text-[10px] font-medium flex items-center gap-1">
+                          <span>⏰</span> {item.selectedTime}
+                        </p>
+                      )}
                     </div>
                     <div className="text-right flex flex-col justify-center">
-                      <p className="text-white font-black">${item.price * item.quantity}</p>
+                      <p className="text-white font-black text-lg">${item.price * item.quantity}</p>
                     </div>
                   </div>
                 ))}

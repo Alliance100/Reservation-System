@@ -68,11 +68,23 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         </svg>
                       </button>
                     </div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">{item.itemModel}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">{item.itemModel}</span>
+                      {item.selectedDate && (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                          📅 {item.selectedDate}
+                        </span>
+                      )}
+                    </div>
+                    {item.selectedTime && (
+                      <p className="text-[11px] font-bold text-gray-600 mt-1 flex items-center gap-1">
+                        <span>⏰</span> {item.selectedTime}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex justify-between items-end mt-2">
-                    <p className="text-sm font-medium text-gray-500">Qty: {item.quantity}</p>
-                    <p className="text-lg font-black text-gray-900">${item.price * item.quantity}</p>
+                  <div className="flex justify-between items-end mt-3 pt-2 border-t border-gray-50">
+                    <p className="text-xs font-medium text-gray-500">Qty: {item.quantity}</p>
+                    <p className="text-base font-black text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -84,7 +96,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           <div className="p-6 bg-gray-50 border-t border-gray-100">
             <div className="flex justify-between items-center mb-6">
               <span className="text-gray-500 font-bold">Total</span>
-              <span className="text-3xl font-black text-gray-900 tracking-tight">${cartTotal}</span>
+              <span className="text-3xl font-black text-gray-900 tracking-tight">${cartTotal.toFixed(2)}</span>
             </div>
             <Link 
               href="/checkout"

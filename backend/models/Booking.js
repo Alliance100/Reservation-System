@@ -21,7 +21,9 @@ const bookingSchema = new mongoose.Schema(
         name: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, default: 1 },
-        details: { type: Object } // Optional extra info like dates, roomType, etc.
+        selectedDate: { type: String }, // e.g. "2026-08-22 to 2026-08-25" or "2026-08-22"
+        selectedTime: { type: String }, // e.g. "02:00 PM Check-in" or "09:30 AM Departure"
+        details: { type: Object } // Optional extra info like roomType, guests, etc.
       },
     ],
     totalAmount: {

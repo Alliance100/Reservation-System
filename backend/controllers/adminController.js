@@ -66,6 +66,20 @@ exports.deleteCoupon = async (req, res) => {
   }
 };
 
+exports.updateCoupon = async (req, res) => {
+  try {
+    const coupon = await Coupon.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!coupon) return res.status(404).json({ success: false, message: 'Coupon not found' });
+    res.status(200).json({ success: true, data: coupon });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 exports.deleteUser = async (req, res) => {
   try {
     if (req.user._id.toString() === req.params.id) {
@@ -81,6 +95,10 @@ exports.deleteUser = async (req, res) => {
 exports.updateBookingStatus = async (req, res) => {
   try {
     const { status } = req.body; // 'confirmed', 'cancelled', 'completed'
+    const allowedStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: `Invalid status. Must be one of: ${allowedStatuses.join(', ')}` });
+    }
     const booking = await Booking.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true });
     if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
     res.status(200).json({ success: true, data: booking });
@@ -98,8 +116,44 @@ exports.updateUserRole = async (req, res) => {
     if (req.user._id.toString() === req.params.id) {
       return res.status(400).json({ success: false, message: 'Cannot change your own role' });
     }
-    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select('-password');
+    const updateData = { role };
+    // If admin explicitly changes a user to supplier, grant immediate verification
+    if (role === 'supplier') {
+      updateData.isVerified = true;
+      updateData.verificationStatus = 'approved';
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true }).select('-password');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Verify or reject a supplier registration
+// @route   PUT /api/admin/users/:id/verify
+// @access  Private (Admin)
+exports.verifySupplier = async (req, res) => {
+  try {
+    const { status } = req.body; // 'approved' or 'rejected'
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ success: false, message: "Status must be 'approved', 'rejected', or 'pending'" });
+    }
+
+    const isVerified = status === 'approved';
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        isVerified,
+        verificationStatus: status,
+      },
+      { new: true }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
     res.status(200).json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

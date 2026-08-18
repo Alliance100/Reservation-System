@@ -9,6 +9,8 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  selectedDate?: string;
+  selectedTime?: string;
   details?: any;
   image?: string;
 }

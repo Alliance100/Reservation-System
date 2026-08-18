@@ -13,6 +13,7 @@ const busSchema = new mongoose.Schema({
   boardingPoints: [String],
   dropPoints: [String],
   images: [String],
+  rating: { type: Number, default: 0 },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Bus', busSchema);

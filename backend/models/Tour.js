@@ -14,7 +14,8 @@ const tourSchema = new mongoose.Schema({
   inclusions: [String],
   exclusions: [String],
   images: [String],
-  maxGroupSize: { type: Number, required: true }
+  maxGroupSize: { type: Number, required: true },
+  rating: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Tour', tourSchema);

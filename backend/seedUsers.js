@@ -9,7 +9,7 @@ mongoose.connect(process.env.MONGO_URI)
 .then(async () => {
   console.log('MongoDB Connected');
   
-  const password = await bcrypt.hash('123456', 10);
+  const password = await bcrypt.hash('password123', 10);
   
   // Seed Admin
   await User.findOneAndUpdate(
@@ -25,7 +25,14 @@ mongoose.connect(process.env.MONGO_URI)
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
 
-  console.log('Seeded admin@ecotravel.com and supplier@ecotravel.com (password: 123456)');
+  // Seed Customer
+  await User.findOneAndUpdate(
+    { email: 'customer@ecotravel.com' },
+    { name: 'Demo Customer', email: 'customer@ecotravel.com', password, role: 'customer' },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+
+  console.log('✅ Seeded all test accounts (password: password123)');
   process.exit();
 })
 .catch(err => {

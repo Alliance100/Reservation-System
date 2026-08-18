@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
+import RevealOnScroll from '@/components/RevealOnScroll';
 
-export default function SearchResults() {
+function SearchResultsContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get('type') || 'hotel';
   const location = searchParams.get('location') || '';
@@ -102,8 +103,10 @@ export default function SearchResults() {
           </div>
         ) : results.length > 0 ? (
           <div className="space-y-6">
-            {results.map((item) => (
-              <ProductCard key={item._id} item={item} type={type} />
+            {results.map((item, idx) => (
+              <RevealOnScroll key={item._id} delay={Math.min(idx * 70, 350)} direction="up">
+                <ProductCard item={item} type={type} />
+              </RevealOnScroll>
             ))}
           </div>
         ) : (
@@ -158,38 +161,38 @@ function ProductCard({ item, type }: { item: any, type: string }) {
   }
 
   return (
-    <Link href={href} className="group block bg-white rounded-3xl shadow-sm hover:shadow-2xl shadow-emerald-900/5 hover:shadow-emerald-900/10 transition-all duration-300 border border-gray-100 overflow-hidden transform hover:-translate-y-1">
+    <Link href={href} className="group block bg-white dark:bg-[#13201b] rounded-3xl shadow-sm hover:shadow-2xl shadow-emerald-900/5 hover:shadow-emerald-900/20 transition-all duration-300 border border-gray-100 dark:border-[#1f332b] overflow-hidden card-interactive">
       <div className="flex flex-col sm:flex-row h-full">
-        {/* Large Image (Visual Storytelling Trend) */}
+        {/* Large Image */}
         <div className="sm:w-2/5 relative h-64 sm:h-auto overflow-hidden">
           <img 
             src={image} 
             alt={title} 
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:hidden"></div>
         </div>
-        
+      
         {/* Content Area */}
         <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-2">
               <div>
-                <span className="inline-block px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider rounded-lg mb-3">
+                <span className="inline-block px-2.5 py-1 bg-emerald-100 dark:bg-[#162620] text-emerald-800 dark:text-emerald-300 text-[10px] font-black uppercase tracking-wider rounded-lg mb-3 border border-emerald-200/40 dark:border-emerald-500/20">
                   Eco-Verified
                 </span>
-                <h3 className="text-2xl font-black text-gray-900 leading-tight mb-2 group-hover:text-emerald-700 transition-colors">
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white leading-tight mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                   {title}
                 </h3>
-                <p className="text-gray-500 font-medium text-sm flex items-center gap-1.5">
-                  <span className="text-emerald-600">📍</span> {subtitle}
+                <p className="text-gray-500 dark:text-gray-400 font-medium text-sm flex items-center gap-1.5">
+                  <span className="text-emerald-600 dark:text-emerald-400">📍</span> {subtitle}
                 </p>
               </div>
               
               <div className="text-right ml-4">
                 <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">From</p>
-                <p className="text-3xl font-black text-gray-900 tracking-tight">${price}</p>
-                <p className="text-xs text-gray-500 font-medium mt-1">
+                <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">${price}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">
                   {type === 'hotel' ? 'per night' : type === 'bus' ? 'per seat' : type === 'tour' ? 'per person' : 'per ticket'}
                 </p>
               </div>
@@ -197,20 +200,33 @@ function ProductCard({ item, type }: { item: any, type: string }) {
 
             <div className="mt-6 flex flex-wrap gap-2">
               {features.map((f, i) => (
-                <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-600">
+                <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-[#162620] border border-gray-100 dark:border-[#1f332b] rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300">
                   {f}
                 </span>
               ))}
             </div>
           </div>
           
-          <div className="mt-8 flex items-center justify-end border-t border-gray-50 pt-6">
-            <div className="inline-flex items-center justify-center px-6 py-3 bg-emerald-50 text-emerald-700 font-black rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm group-hover:shadow-lg group-hover:shadow-emerald-200">
+          <div className="mt-8 flex items-center justify-end border-t border-gray-50 dark:border-[#1f332b] pt-6">
+            <div className="inline-flex items-center justify-center px-6 py-3 bg-emerald-50 dark:bg-[#162620] text-emerald-700 dark:text-emerald-400 font-black rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm group-hover:shadow-lg group-hover:shadow-emerald-600/30">
               View Details
             </div>
           </div>
         </div>
       </div>
     </Link>
+  );
+}
+
+export default function SearchResults() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F7FBF9] pt-32 px-4 flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="font-bold text-gray-500 text-sm">Searching eco-certified options...</p>
+      </div>
+    }>
+      <SearchResultsContent />
+    </Suspense>
   );
 }

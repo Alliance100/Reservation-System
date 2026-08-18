@@ -11,6 +11,13 @@ export default function FlightDetail() {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
+  // Date & Time Requirements State
+  const [travelDate, setTravelDate] = useState(
+    new Date(Date.now() + 86400000).toISOString().split('T')[0]
+  );
+  const [flightTimeWindow, setFlightTimeWindow] = useState("Morning Flight (07:30 AM)");
+  const [passengers, setPassengers] = useState(1);
+
   const handleReserve = () => {
     if (!flight) return;
     addToCart({
@@ -19,7 +26,18 @@ export default function FlightDetail() {
       itemId: flight._id,
       name: `${flight.origin} to ${flight.destination}`,
       price: flight.price,
-      quantity: 1,
+      quantity: passengers,
+      selectedDate: travelDate,
+      selectedTime: flightTimeWindow,
+      details: {
+        travelDate,
+        flightTimeWindow,
+        airline: flight.airline,
+        flightNumber: flight.flightNumber,
+        origin: flight.origin,
+        destination: flight.destination,
+        passengers
+      },
       image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80'
     });
     setAdded(true);
@@ -145,12 +163,59 @@ export default function FlightDetail() {
                 </div>
 
                 <div className="p-8">
+                  {/* Select Flight Date & Time */}
+                  <div className="space-y-4 mb-6 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
+                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">Your Flight Requirements</h3>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Departure Flight Date</label>
+                      <input
+                        type="date"
+                        value={travelDate}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setTravelDate(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-900 focus:ring-2 focus:ring-emerald-400 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Departure Window</label>
+                      <select
+                        value={flightTimeWindow}
+                        onChange={(e) => setFlightTimeWindow(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:ring-2 focus:ring-emerald-400 focus:outline-none"
+                      >
+                        <option value="Morning Flight (07:30 AM)">Morning Flight (07:30 AM)</option>
+                        <option value="Afternoon Flight (01:15 PM)">Afternoon Flight (01:15 PM)</option>
+                        <option value="Evening Flight (06:45 PM)">Evening Flight (06:45 PM)</option>
+                        <option value="Red-Eye / Late Flight (10:30 PM)">Red-Eye / Late Flight (10:30 PM)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-emerald-100/60 text-xs">
+                      <span className="text-gray-500 font-medium">Passengers:</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPassengers(p => Math.max(1, p - 1))}
+                          className="w-6 h-6 rounded-lg bg-gray-200 hover:bg-gray-300 font-black text-xs flex items-center justify-center"
+                        >-</button>
+                        <span className="font-black text-sm text-gray-900 w-4 text-center">{passengers}</span>
+                        <button
+                          type="button"
+                          onClick={() => setPassengers(p => Math.min(8, p + 1))}
+                          className="w-6 h-6 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center"
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+
                   <button 
                     onClick={handleReserve}
                     disabled={added}
                     className={`w-full py-4 text-white font-black rounded-2xl shadow-xl transition-all hover:-translate-y-1 active:scale-95 text-lg ${added ? 'bg-gray-900 shadow-gray-900/20' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'}`}
                   >
-                    {added ? 'Added to Cart ✓' : 'Book Flight'}
+                    {added ? 'Added to Cart ✓' : `Book ${passengers} Ticket${passengers > 1 ? 's' : ''} • $${flight.price * passengers}`}
                   </button>
                   <p className="text-center text-xs text-gray-400 font-bold mt-4">E-ticket delivered instantly</p>
                 </div>

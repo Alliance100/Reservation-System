@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -14,6 +13,7 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/login`, {
         method: 'POST',
@@ -24,6 +24,11 @@ export default function Login() {
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Login failed');
       }
+
+      if (data.user?.role !== 'admin') {
+        throw new Error(`Access Denied: Account (${data.user?.email}) has role "${data.user?.role}" and is not authorized to access the Admin Panel. Please sign in with an Admin account.`);
+      }
+
       login(data.token, data.user);
       router.push('/admin');
     } catch (err: any) {
@@ -32,71 +37,60 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)]">
-      {/* Left side - Form */}
-      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-white">
-        <div className="mx-auto w-full max-w-sm lg:w-96">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7FBF9] px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 p-8 sm:p-10 transition-all">
+        
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100 text-purple-800 text-xs font-black uppercase tracking-wider mb-4 shadow-sm">
+            🛡️ Master Control
+          </div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Admin Portal</h1>
+          <p className="text-sm text-gray-500 font-medium max-w-xs mx-auto">
+            Sign in to manage platform operations, inventory, and users.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleLogin} className="space-y-5">
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+              <p className="text-xs sm:text-sm text-red-700 font-bold leading-relaxed">{error}</p>
+            </div>
+          )}
+          
           <div>
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Admin Portal</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Sign in to manage the platform and users.
-            </p>
+            <label className="block text-xs font-black text-gray-700 uppercase tracking-wider mb-1.5 text-left">Email address</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-bold transition-all placeholder:text-gray-400 placeholder:font-normal"
+              placeholder="admin@ecotravel.com"
+            />
           </div>
 
-          <div className="mt-8">
-            <form onSubmit={handleLogin} className="space-y-6">
-              {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
-                  <p className="text-sm text-red-700 font-medium">{error}</p>
-                </div>
-              )}
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Email address</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
-                  placeholder="admin@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
-                  placeholder="••••••••"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-purple-600 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
-              >
-                Sign in to Admin Dashboard
-              </button>
-            </form>
+          <div>
+            <label className="block text-xs font-black text-gray-700 uppercase tracking-wider mb-1.5 text-left">Password</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-bold transition-all placeholder:text-gray-400 placeholder:font-normal"
+              placeholder="••••••••"
+            />
           </div>
-        </div>
-      </div>
 
-      {/* Right side - Image */}
-      <div className="hidden md:block relative w-0 flex-1 bg-purple-900">
-        <div className="absolute inset-0 h-full w-full object-cover opacity-80 mix-blend-multiply bg-[url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-center bg-cover" />
-        <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="max-w-lg text-white">
-            <h2 className="text-4xl font-black mb-6">Global Oversight.</h2>
-            <p className="text-xl text-purple-100 font-medium">
-              Manage platform operations, verify users, and maintain the ecosystem.
-            </p>
-          </div>
-        </div>
+          <button
+            type="submit"
+            className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-purple-600/25 text-sm font-black text-white bg-purple-700 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all hover:scale-[1.01] active:scale-95 cursor-pointer mt-2"
+          >
+            Sign In to Dashboard →
+          </button>
+        </form>
+
       </div>
     </div>
   );
