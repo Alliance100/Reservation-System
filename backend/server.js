@@ -16,25 +16,38 @@ const app = express();
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ limit: '2mb', extended: true }));
 
-// Allowed origins: localhost for dev + three production Vercel apps
+// Allowed origins: localhost for dev + any vercel.app deployment + custom FRONTEND_URL env vars
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',
-  // Production Vercel URLs — set these in Vercel Environment Variables
-  process.env.FRONTEND_URL_CUSTOMER,  // https://ecotravel-reservation-system.vercel.app
-  process.env.FRONTEND_URL_SUPPLIER,  // https://ecotravel-reservation-system-supplier.vercel.app
-  process.env.FRONTEND_URL_ADMIN,     // https://ecotravel-admin.vercel.app
+  process.env.FRONTEND_URL_CUSTOMER,
+  process.env.FRONTEND_URL_SUPPLIER,
+  process.env.FRONTEND_URL_ADMIN,
+  process.env.FRONTEND_URL
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g., mobile apps, curl, Postman, Vercel health checks)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS policy violation: origin not allowed'));
+    if (!origin) return callback(null, true);
+
+    // Allow any localhost port
+    if (/^http:\/\/localhost(:\d+)?$/.test(origin)) {
+      return callback(null, true);
     }
+
+    // Allow all *.vercel.app deployments (production, preview, branch deploys)
+    if (/^https:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow explicit allowed origins
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('CORS policy violation: origin not allowed'));
   },
   credentials: true
 }));
