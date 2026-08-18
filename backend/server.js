@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
@@ -17,17 +16,20 @@ const app = express();
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ limit: '2mb', extended: true }));
 
-// Restrict CORS to known frontend origins
+// Allowed origins: localhost for dev + three production Vercel apps
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',
-  process.env.FRONTEND_URL
+  // Production Vercel URLs — set these in Vercel Environment Variables
+  process.env.FRONTEND_URL_CUSTOMER,  // https://ecotravel-reservation-system.vercel.app
+  process.env.FRONTEND_URL_SUPPLIER,  // https://ecotravel-reservation-system-supplier.vercel.app
+  process.env.FRONTEND_URL_ADMIN,     // https://ecotravel-admin.vercel.app
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., mobile apps, curl, Postman)
+    // Allow requests with no origin (e.g., mobile apps, curl, Postman, Vercel health checks)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -62,11 +64,18 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/supplier', supplierRoutes);
 app.use('/api/reviews', reviewRoutes);
 
-// Basic route
+// Health check / root
 app.get('/', (req, res) => {
   res.send('Reservation System API is running...');
 });
 
+// Export for Vercel serverless (module.exports = app is the entry-point)
+// listen() is kept so local dev (`node server.js`) still works
 const PORT = process.env.PORT || 5000;
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () =>
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  );
+}
 
-app.listen(PORT, () => console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
+module.exports = app;
